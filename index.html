@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How USS and its peers are perceived on performance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Public+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--bg:#F4F6F8;--panel:#FFFFFF;--fg:#14202B;--muted:#5B6875;--line:#DCE2E8;--grid:#E9EDF1;--ok:#23775A;--warn:#A86A12;--bad:#B23A3A;--accent:#1F4E79;
+--serif:"Newsreader",Georgia,"Times New Roman",serif;--sans:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0E151C;--panel:#16202A;--fg:#E5EBF1;--muted:#97A6B5;--line:#283746;--grid:#1F2B37;--ok:#5CC08F;--warn:#E0A84A;--bad:#E57373;--accent:#7FB2E5}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0E151C;--panel:#16202A;--fg:#E5EBF1;--muted:#97A6B5;--line:#283746;--grid:#1F2B37;--ok:#5CC08F;--warn:#E0A84A;--bad:#E57373;--accent:#7FB2E5}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{padding:clamp(1.25rem,4vw,3rem) clamp(1rem,4vw,2.5rem) 4rem}
+.foot{max-width:1180px;margin:2rem auto 0;font-size:.78rem;color:var(--muted)}
+
+
+.pp{font-family:var(--sans);color:var(--fg);max-width:1180px;margin-inline:auto;display:flex;flex-direction:column;gap:2.25rem}
+.pp h1{font-family:var(--serif);font-weight:400;font-size:clamp(1.9rem,4vw,2.75rem);margin:0;line-height:1.15}
+.pp .lede{font-size:.98rem;color:var(--muted);margin:.6rem 0 0;max-width:72ch;line-height:1.5}
+.pp .scope{font-size:.8rem;color:var(--muted);margin-top:.3rem}
+.pp h2{font-size:1.2rem;font-weight:600;margin:0}
+.pp .note{font-size:.8rem;color:var(--muted);margin:.3rem 0 1rem;line-height:1.45;max-width:80ch}
+.pp .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:clamp(1rem,2.5vw,1.75rem)}
+.pp .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr));gap:1rem}
+.pp .scroll{overflow-x:auto}
+.pp .hm{display:grid;grid-template-columns:minmax(9rem,1.3fr) repeat(8,minmax(4.6rem,1fr)) minmax(5.5rem,.9fr);gap:3px;min-width:56rem}
+.pp .hm .th{font-size:.8rem;color:var(--muted);padding:0 .25rem .35rem;line-height:1.25;align-self:end}
+.pp .hm .fname{font-size:.98rem;padding:.5rem .4rem .5rem 0;align-self:center;line-height:1.2}
+.pp .hm .ftype{display:block;font-size:.8rem;color:var(--muted)}
+.pp .cell{border:1px solid transparent;border-radius:calc(10px * .6);min-height:2.9rem;cursor:pointer;font:inherit;font-size:.8rem;color:var(--fg);display:flex;align-items:center;justify-content:center;padding:.25rem;text-align:center;line-height:1.15}
+.pp .cell:focus-visible{outline:2px solid var(--fg);outline-offset:1px}
+.pp .cell[aria-pressed=true]{border-color:var(--fg)}
+.pp .s-Strength{background:color-mix(in srgb,var(--ok) 26%,transparent)}
+.pp .s-Mixed{background:color-mix(in srgb,var(--warn) 24%,transparent)}
+.pp .s-Weakness{background:color-mix(in srgb,var(--bad) 30%,transparent)}
+.pp .s-Not.evidenced,.pp .s-Not.applicable{background:transparent;border:1px dashed var(--line);color:var(--muted)}
+.pp .tally{font-size:.8rem;color:var(--muted);align-self:center;padding-left:.4rem;font-variant-numeric:tabular-nums;line-height:1.35}
+.pp .legend{display:flex;flex-wrap:wrap;gap:1rem;font-size:.8rem;color:var(--muted);margin-top:1rem}
+.pp .legend span{display:inline-flex;align-items:center;gap:.4rem}
+.pp .sw{width:.9rem;height:.9rem;border-radius:3px;display:inline-block}
+.pp .detail{margin-top:1rem;border-top:1px solid var(--line);padding-top:1rem;min-height:6.5rem}
+.pp .detail .dh{font-size:.8rem;color:var(--muted)}
+.pp .detail .dev{font-family:var(--serif);font-size:1.2rem;line-height:1.4;margin:.35rem 0;max-width:70ch}
+.pp .detail .dsrc{font-size:.8rem;color:var(--muted)}
+.pp .chart{position:relative;min-height:30rem}
+.pp .tip{position:absolute;pointer-events:none;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 6px 24px rgba(10,20,30,.14);padding:.35rem .6rem;font-size:.8rem;opacity:0;max-width:16rem;line-height:1.4}
+.pp .tip .tt{color:var(--muted)}
+.pp table{width:100%;border-collapse:collapse;font-size:.98rem}
+.pp th{text-align:left;font-size:.8rem;color:var(--muted);font-weight:600;padding:.4rem .6rem .4rem 0;border-bottom:1px solid var(--line);vertical-align:bottom}
+.pp td{padding:.6rem .6rem .6rem 0;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.4}
+.pp td.strong{font-weight:600;white-space:nowrap}
+.pp td.muted{color:var(--muted);font-size:.8rem}
+.pp .tbl{min-width:52rem}
+.pp .hm .fname.client{font-weight:600}
+.pp .ctag{display:inline-block;margin-left:.45rem;font-size:.68rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);border:1px solid currentColor;border-radius:999px;padding:.05rem .45rem;vertical-align:middle}
+.pp .hm .sep{grid-column:1/-1;height:0;border-bottom:1px solid var(--line);margin:.35rem 0}
+.pp tr[data-key="uss"] td,.pp tr[data-key^="uss_"] td{background:color-mix(in srgb,var(--accent) 7%,transparent)}
+.pp .uss{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,17rem),1fr));gap:1.5rem}
+.pp .uss h3{font-size:.98rem;font-weight:600;margin:0 0 .35rem}
+.pp .uss p{margin:0;font-size:.98rem;line-height:1.5;color:var(--fg)}
+.pp .method p{font-size:.8rem;color:var(--muted);line-height:1.5;margin:0 0 .5rem;max-width:90ch}
+.pp .fail{display:flex;align-items:center;justify-content:center;gap:.5rem;color:var(--muted);font-size:.8rem;min-height:6rem}
+.pp .fail i{width:.375rem;height:.375rem;border-radius:50%;background:var(--bad);display:inline-block}
+@media (prefers-reduced-motion:no-preference){.pp .cell.in{animation:ppin .45s cubic-bezier(.2,.7,.2,1) both}@keyframes ppin{from{opacity:0}to{opacity:1}}}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="pp">
+ <header id="top">
+  <h1>How USS and its peers are perceived on performance</h1>
+  <p class="lede" id="takeaway"></p>
+  <div class="scope">USS and its peers, coded from their latest annual, investment, stewardship and rating agency documents, the latest available for each fund.</div>
+ </header>
+
+ <section id="heatmap-section" class="card">
+  <h2>Where each peer's reputation is strong, mixed or weak, by theme</h2>
+  <p class="note">Each square is Headland's reading of how a fund's own reporting and outside voices present it on that theme. Select a square to see the evidence behind it.</p>
+  <div class="scroll"><div class="hm" id="heatmap"></div></div>
+  <div class="legend">
+   <span><i class="sw s-Strength"></i>Strength</span><span><i class="sw s-Mixed"></i>Mixed</span><span><i class="sw s-Weakness"></i>Weakness</span><span><i class="sw" style="border:1px dashed var(--line)"></i>Not in the source pack, or not applicable</span>
+  </div>
+  <div class="detail" id="detail" aria-live="polite">
+   <div class="dh" id="d-head"></div>
+   <div class="dev" id="d-ev"></div>
+   <div class="dsrc" id="d-src"></div>
+  </div>
+ </section>
+
+ <section id="returns-section" class="card">
+  <h2>Reported returns against each fund's own yardstick, where one is published</h2>
+  <p class="note">Filled dot is the fund's return; hollow dot is the target or benchmark it set itself. Periods, currencies and mandates differ, so read each line on its own terms rather than as a league table. LGPS Central publishes no comparable return figure.</p>
+  <div class="chart" id="dumbbell"></div>
+ </section>
+
+ <section id="validation-section" class="card">
+  <h2>What rating agencies, members and award judges say about each peer</h2>
+  <p class="note">The Canadian funds have rating agencies speaking for them. The UK peers lean on awards and member satisfaction instead.</p>
+  <div class="scroll"><table class="tbl" id="vtable">
+   <thead><tr><th>Fund</th><th>Who</th><th>Type</th><th>Verdict</th><th>What they said</th><th>When</th></tr></thead>
+   <tbody></tbody></table></div>
+ </section>
+
+ <section id="profiles-section" class="card">
+  <h2>Each peer's lead story and the point critics will pick at</h2>
+  <p class="note">Scale is shown in each fund's own currency and reporting basis.</p>
+  <div class="scroll"><table class="tbl" id="ftable">
+   <thead><tr><th>Fund</th><th>Type</th><th>Period</th><th>Scale</th><th>Lead story</th><th>Point of attack</th><th>Since year end</th></tr></thead>
+   <tbody></tbody></table></div>
+ </section>
+</div>
+
+<div class="foot">Prepared by Headland for USS. Based on each peer's own published documents and rating agency reports; stances are Headland's assessment.</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script>
+
+const DATA={"funds": [{"fund_id": "uss", "fund": "USS", "type": "UK higher education pension scheme", "home": "UK", "period": "FY to 31 Mar 2026", "scale": "£79.8bn DB net assets", "lead_narrative": "A £14.1bn deficit in 2020 turned into a £15.8bn surplus, with returns outpacing liabilities", "watch_point": "Trailed its mostly public-market comparators as private assets lagged; five-year absolute return slightly negative; some stakeholders want more performance disclosure", "latest": "2026 valuation under way, with funding assumptions out for consultation (Jul 2026)"}, {"fund_id": "cpp", "fund": "CPP Investments", "type": "National pension fund manager", "home": "Canada", "period": "FY to 31 Mar 2026", "scale": "C$793.3bn net assets", "lead_narrative": "A diversified portfolio built for the long haul, now nearly C$800bn", "watch_point": "Trailed public market benchmarks in a narrow, US tech-led market; C$12.4bn currency loss", "latest": "Q1 FY27: 7.5% net return, net assets up to C$863.6bn (Aug 2026)"}, {"fund_id": "otpp", "fund": "Ontario Teachers'", "type": "Single-profession DB plan", "home": "Canada", "period": "Calendar 2025", "scale": "C$279.4bn net assets", "lead_narrative": "Fully funded for a 13th straight year with a C$31.2bn preliminary surplus", "watch_point": "Missed its 7% target and trailed public market benchmarks again; private equity and real estate weak", "latest": "H1 2026: 9.5% net return, net assets up to C$303.2bn (Aug 2026)"}, {"fund_id": "ppf", "fund": "Pension Protection Fund", "type": "UK DB lifeboat fund", "home": "UK", "period": "FY to 31 Mar 2026", "scale": "£31.5bn assets", "lead_narrative": "Strong enough to charge schemes no levy while improving member benefits", "watch_point": "Run by an acting CEO while it implements the Pension Schemes Act 2026", "latest": "Sustainability report adds carbon data coverage of 82% (Oct 2026)"}, {"fund_id": "railpen", "fund": "Railpen", "type": "Railways scheme manager", "home": "UK", "period": "Calendar 2025", "scale": "£32.6bn assets", "lead_narrative": "Double-digit growth returns and a leading voice on shareholder rights", "watch_point": "Illiquid and long-term income funds lost money, with building safety costs in property", "latest": "Leading role in a £1bn+ UK Scale-up Fund (Jul 2026)"}, {"fund_id": "btc", "fund": "Border to Coast", "type": "LGPS asset pool", "home": "UK", "period": "FY to 31 Mar 2026", "scale": "£120bn across 18 Partner Funds from Apr 2026", "lead_narrative": "The scale winner of Fit for the Future, now the largest LGPS pool", "watch_point": "Flagship Global Equity Alpha Fund far behind its benchmark over 1, 3 and 5 years", "latest": "£400m deal agreed for 866 family homes (Aug 2026)"}, {"fund_id": "lgpsc", "fund": "LGPS Central", "type": "LGPS asset pool", "home": "UK", "period": "FY to 31 Mar 2026", "scale": "£53.4bn under stewardship, heading past £100bn", "lead_narrative": "Low cost, award-winning and positioning itself as the LGPS housing champion", "watch_point": "Active equity sub-funds behind benchmark; absolute financed emissions up as assets grew", "latest": "Housing report sets out a Social Housing Fund for 2027 (Oct 2026)"}], "themes": [{"fund_id": "uss", "fund": "USS", "theme": "Headline returns", "theme_order": 1, "stance": "Mixed", "stance_score": 0, "evidence": "DB fund returned 9.8% in FY26 and 4.7% a year over ten years, but only 3.3% a year over three years and -0.2% a year over five.", "source": "USS briefing: Investment performance assessment for DB, Jul 2026"}, {"fund_id": "uss", "fund": "USS", "theme": "Returns against yardstick", "theme_order": 2, "stance": "Mixed", "stance_score": 0, "evidence": "Beat its liabilities by 11.7% a year over five years, but trailed the average comparator portfolio by 2.1 points in FY26. Of 13 benchmarked mandates, nine are ahead over five years, though the four behind hold 49% of those assets.", "source": "USS briefing: Investment performance assessment for DB, Jul 2026"}, {"fund_id": "uss", "fund": "USS", "theme": "Funding and resilience", "theme_order": 3, "stance": "Strength", "stance_score": 1, "evidence": "Moved from a £14.1bn deficit in 2020 to an estimated £15.8bn surplus, 125% funded on a technical provisions basis. USS is open that a bad year (5% chance) could cost £13bn or more.", "source": "USS Report and Accounts 2026; USS briefing, Jul 2026"}, {"fund_id": "uss", "fund": "USS", "theme": "Cost and efficiency", "theme_order": 4, "stance": "Strength", "stance_score": 1, "evidence": "Investment management costs 13 basis points below the CEM peer median, worth about £102m a year.", "source": "USS Report and Accounts 2026"}, {"fund_id": "uss", "fund": "USS", "theme": "Private markets", "theme_order": 5, "stance": "Weakness", "stance_score": -1, "evidence": "Private growth assets underperformed public market indices over the year, which USS names as the key reason it trailed its comparators.", "source": "USS briefing: Investment performance assessment for DB, Jul 2026"}, {"fund_id": "uss", "fund": "USS", "theme": "Third-party validation", "theme_order": 6, "stance": "Strength", "stance_score": 1, "evidence": "A record 93% of employers rate their relationship with USS as good or very good, and member trust is at its highest on record. The Trustee's Investment Committee rated performance 'on target', up from 'slightly below'.", "source": "USS Report and Accounts 2026"}, {"fund_id": "uss", "fund": "USS", "theme": "Home market and policy", "theme_order": 7, "stance": "Strength", "stance_score": 1, "evidence": "Signed the Mansion House Accord; around 30% of DB assets sit in private markets, roughly half of that in the UK.", "source": "USS Report and Accounts 2026"}, {"fund_id": "uss", "fund": "USS", "theme": "Stewardship and climate", "theme_order": 8, "stance": "Strength", "stance_score": 1, "evidence": "Financed emissions intensity down 63% on 2019, beating its 2025 interim target and ahead of its 2030 one. USS says plainly this doesn't mean less real-world climate risk.", "source": "USS Report and Accounts 2026; Responsible investment: what it means to us"}, {"fund_id": "cpp", "fund": "CPP Investments", "theme": "Headline returns", "theme_order": 1, "stance": "Strength", "stance_score": 1, "evidence": "7.8% net return in FY26 and 8.8% a year over ten years, earning C$56.9bn of net income.", "source": "CPP Investments FY26 annual report; FY26 results release"}, {"fund_id": "cpp", "fund": "CPP Investments", "theme": "Returns against yardstick", "theme_order": 2, "stance": "Mixed", "stance_score": 0, "evidence": "Ten-year real return of 5.9% beats the Chief Actuary's 4.05% assumption, but diversification meant relative underperformance this year and FX cost 1.8 points.", "source": "CPP Investments FY26 annual report"}, {"fund_id": "cpp", "fund": "CPP Investments", "theme": "Funding and resilience", "theme_order": 3, "stance": "Strength", "stance_score": 1, "evidence": "Chief Actuary's 32nd report reconfirmed 75-year sustainability, with assets about C$80bn above expectations over three years.", "source": "CPP Investments FY26 results release"}, {"fund_id": "cpp", "fund": "CPP Investments", "theme": "Cost and efficiency", "theme_order": 4, "stance": "Strength", "stance_score": 1, "evidence": "Operating costs fell to 23.1 basis points, the lowest in ten years and below the five-year average of 26.5.", "source": "CPP Investments FY26 annual report"}, {"fund_id": "cpp", "fund": "CPP Investments", "theme": "Private markets", "theme_order": 5, "stance": "Mixed", "stance_score": 0, "evidence": "Private equity described as facing a more challenging period; office and retail real estate also held returns back.", "source": "CPP Investments FY26 annual report"}, {"fund_id": "cpp", "fund": "CPP Investments", "theme": "Third-party validation", "theme_order": 6, "stance": "Strength", "stance_score": 1, "evidence": "C$20bn of term debt issued in 2025 with steady investor demand; named 2025 Kangaroo Issuer of the Year.", "source": "CPP Investments Term Debt Program 2025 review"}, {"fund_id": "cpp", "fund": "CPP Investments", "theme": "Home market and policy", "theme_order": 7, "stance": "Strength", "stance_score": 1, "evidence": "Launched the Maple Fund with Brookfield to pursue up to C$50bn of Canadian equity deals, each subject to independent evaluation. The CEO frames investing at home as a risk-return call, not an obligation. A record C$119.2bn is already in Canada.", "source": "CPP FY26 annual report; Maple Fund announcement and Canada Investment Summit speech, Sep 2026"}, {"fund_id": "cpp", "fund": "CPP Investments", "theme": "Stewardship and climate", "theme_order": 8, "stance": "Not evidenced", "stance_score": null, "evidence": "No climate targets or stewardship metrics surfaced in the source pack.", "source": "Not in source pack"}, {"fund_id": "otpp", "fund": "Ontario Teachers'", "theme": "Headline returns", "theme_order": 1, "stance": "Mixed", "stance_score": 0, "evidence": "6.7% net return, just short of the 7% annual target; venture growth returned 30% and public equities 15%.", "source": "OTPP 2025 annual report; April 2026 AGM transcript"}, {"fund_id": "otpp", "fund": "Ontario Teachers'", "theme": "Returns against yardstick", "theme_order": 2, "stance": "Weakness", "stance_score": -1, "evidence": "Trailed its benchmark in 2025 and, per the AGM, trailed public market benchmarks again by 5%. Management calls it a key focus for 2026.", "source": "OTPP 2025 annual report; April 2026 AGM transcript"}, {"fund_id": "otpp", "fund": "Ontario Teachers'", "theme": "Funding and resilience", "theme_order": 3, "stance": "Strength", "stance_score": 1, "evidence": "Fully funded for a 13th year with a C$31.2bn preliminary surplus; Moody's puts the funding ratio at 154%.", "source": "OTPP 2025 annual report; Moody's credit opinion Jul 2026"}, {"fund_id": "otpp", "fund": "Ontario Teachers'", "theme": "Cost and efficiency", "theme_order": 4, "stance": "Not evidenced", "stance_score": null, "evidence": "No cost ratio surfaced in the source pack.", "source": "Not in source pack"}, {"fund_id": "otpp", "fund": "Ontario Teachers'", "theme": "Private markets", "theme_order": 5, "stance": "Weakness", "stance_score": -1, "evidence": "Private equity and real estate returns challenged; PE faces a less liquid market and high cost of debt. S&P also flags weaker PE and real estate.", "source": "OTPP AGM transcript; S&P RatingsDirect Jun 2026"}, {"fund_id": "otpp", "fund": "Ontario Teachers'", "theme": "Third-party validation", "theme_order": 6, "stance": "Strength", "stance_score": 1, "evidence": "AAA from S&P and DBRS, Aa1 from Moody's, all stable. Moody's caveats: rising benefit outflows, moderate leverage and high derivatives exposure.", "source": "Moody's Jul 2026; S&P Jun 2026; Morningstar DBRS Jun 2026"}, {"fund_id": "otpp", "fund": "Ontario Teachers'", "theme": "Home market and policy", "theme_order": 7, "stance": "Strength", "stance_score": 1, "evidence": "New objective to invest an additional C$10bn in Canada by the end of 2027 in deals that meet its return targets, answering the domestic investment questions members raised at the AGM. Canada is already 31% of investments.", "source": "OTPP April 2026 AGM transcript; Canada investment announcement, Sep 2026"}, {"fund_id": "otpp", "fund": "Ontario Teachers'", "theme": "Stewardship and climate", "theme_order": 8, "stance": "Mixed", "stance_score": 0, "evidence": "Climate programme reset around growing 'Climate Transition Aligned' assets by 2030, presented to members as a new approach.", "source": "OTPP April 2026 AGM transcript"}, {"fund_id": "ppf", "fund": "Pension Protection Fund", "theme": "Headline returns", "theme_order": 1, "stance": "Strength", "stance_score": 1, "evidence": "Growth portfolio returned 7.1%, adding around £1.3bn to reserves; assets up to £31.5bn.", "source": "PPF Annual Report 2025/26; Year in review"}, {"fund_id": "ppf", "fund": "Pension Protection Fund", "theme": "Returns against yardstick", "theme_order": 2, "stance": "Strength", "stance_score": 1, "evidence": "6.3% a year over five years against a 5.3% target, and 2.0% a year ahead of its strategic asset allocation benchmark.", "source": "PPF Annual Report 2025/26"}, {"fund_id": "ppf", "fund": "Pension Protection Fund", "theme": "Funding and resilience", "theme_order": 3, "stance": "Strength", "stance_score": 1, "evidence": "Reserves of £13.7bn even after funding £1.4bn of benefit improvements; the schemes it protects are 135% funded in aggregate.", "source": "PPF Annual Report 2025/26; PPF 7800 Oct 2026"}, {"fund_id": "ppf", "fund": "Pension Protection Fund", "theme": "Cost and efficiency", "theme_order": 4, "stance": "Strength", "stance_score": 1, "evidence": "No conventional levy for 2025/26 or 2026/27 and the administration levy abolished, cutting costs for employers.", "source": "PPF Annual Report 2025/26; Year in review"}, {"fund_id": "ppf", "fund": "Pension Protection Fund", "theme": "Private markets", "theme_order": 5, "stance": "Strength", "stance_score": 1, "evidence": "Infrastructure named among the main performers over five years; all asset classes positive over the period.", "source": "PPF Annual Report 2025/26"}, {"fund_id": "ppf", "fund": "Pension Protection Fund", "theme": "Third-party validation", "theme_order": 6, "stance": "Strength", "stance_score": 1, "evidence": "Member satisfaction of 97.4% against a 90% target; over £100m paid to pension fraud victims.", "source": "PPF Year in review 2025/26"}, {"fund_id": "ppf", "fund": "Pension Protection Fund", "theme": "Home market and policy", "theme_order": 7, "stance": "Strength", "stance_score": 1, "evidence": "Shaped the Pension Schemes Act 2026 with DWP, unlocking indexation on pre-1997 benefits and levy flexibility.", "source": "PPF Year in review 2025/26"}, {"fund_id": "ppf", "fund": "Pension Protection Fund", "theme": "Stewardship and climate", "theme_order": 8, "stance": "Strength", "stance_score": 1, "evidence": "Scope 1 and 2 financed emissions down 62% across specified listed holdings since December 2020, which PPF itself says isn't the same as real-world decarbonisation. Carbon data now covers 82% of the fund, up from about 30% in 2020/21.", "source": "PPF Sustainability Report 2025/26; sustainability release, Oct 2026"}, {"fund_id": "railpen", "fund": "Railpen", "theme": "Headline returns", "theme_order": 1, "stance": "Strength", "stance_score": 1, "evidence": "Growth Pooled Fund returned 13.4% in 2025; assets rose from £30.7bn to £32.6bn on £2.9bn of returns.", "source": "Railpen Report and Accounts 2025"}, {"fund_id": "railpen", "fund": "Railpen", "theme": "Returns against yardstick", "theme_order": 2, "stance": "Not evidenced", "stance_score": null, "evidence": "Fund returns are reported without a benchmark comparison in the source pack.", "source": "Not in source pack"}, {"fund_id": "railpen", "fund": "Railpen", "theme": "Funding and resilience", "theme_order": 3, "stance": "Not evidenced", "stance_score": null, "evidence": "2025 valuation work under way; no funding figure in the source pack.", "source": "Railpen Report and Accounts 2025"}, {"fund_id": "railpen", "fund": "Railpen", "theme": "Cost and efficiency", "theme_order": 4, "stance": "Not evidenced", "stance_score": null, "evidence": "No cost ratio surfaced in the source pack.", "source": "Not in source pack"}, {"fund_id": "railpen", "fund": "Railpen", "theme": "Private markets", "theme_order": 5, "stance": "Weakness", "stance_score": -1, "evidence": "Illiquid Growth fund returned -1.1% and Long Term Income -1.3% in 2025, with Long Term Income down 12.8% a year over three years.", "source": "Railpen Report and Accounts 2025"}, {"fund_id": "railpen", "fund": "Railpen", "theme": "Third-party validation", "theme_order": 6, "stance": "Strength", "stance_score": 1, "evidence": "Member satisfaction rose to 81.7 on the UK Customer Satisfaction Index; eight industry award wins in 2025.", "source": "Railpen Report and Accounts 2025"}, {"fund_id": "railpen", "fund": "Railpen", "theme": "Home market and policy", "theme_order": 7, "stance": "Strength", "stance_score": 1, "evidence": "Taking a leading role in a collaborative UK Scale-up Fund of over £1bn, framed around member returns first, and building out a Cambridge innovation cluster.", "source": "Railpen announcements, Jul and Oct 2026"}, {"fund_id": "railpen", "fund": "Railpen", "theme": "Stewardship and climate", "theme_order": 8, "stance": "Strength", "stance_score": 1, "evidence": "Leads the Investor Coalition for Equal Votes on dual-class shares, launched a Net Zero Engagement Plan and a 2026 to 2030 systems stewardship strategy that treats market-wide risks as financially material.", "source": "Railpen Stewardship Report 2025; stewardship strategy release, Mar 2026"}, {"fund_id": "btc", "fund": "Border to Coast", "theme": "Headline returns", "theme_order": 1, "stance": "Mixed", "stance_score": 0, "evidence": "No pool-wide return is published; the flagship Global Equity Alpha Fund returned 7.7% over the year to August 2026.", "source": "Global Equity Alpha factsheet Aug 2026"}, {"fund_id": "btc", "fund": "Border to Coast", "theme": "Returns against yardstick", "theme_order": 2, "stance": "Weakness", "stance_score": -1, "evidence": "Global Equity Alpha trails MSCI ACWI by 14.2 points over one year and 7.0 points a year over three, against a target to beat it by 2%.", "source": "Global Equity Alpha factsheet Aug 2026"}, {"fund_id": "btc", "fund": "Border to Coast", "theme": "Funding and resilience", "theme_order": 3, "stance": "Not applicable", "stance_score": null, "evidence": "An asset pool, so funding sits with its Partner Funds.", "source": "n/a"}, {"fund_id": "btc", "fund": "Border to Coast", "theme": "Cost and efficiency", "theme_order": 4, "stance": "Strength", "stance_score": 1, "evidence": "£271m of cost savings delivered for Partner Funds since 2018.", "source": "Border to Coast Annual Report 2025/26"}, {"fund_id": "btc", "fund": "Border to Coast", "theme": "Private markets", "theme_order": 5, "stance": "Strength", "stance_score": 1, "evidence": "Private markets programme at £23.2bn invested and committed; UK Real Estate Fund scaled to £2bn with an IPE Silver; agreed a £400m deal for 866 family homes across 12 estates.", "source": "Border to Coast Annual Report 2025/26; private markets and housing releases, Aug 2026"}, {"fund_id": "btc", "fund": "Border to Coast", "theme": "Third-party validation", "theme_order": 6, "stance": "Strength", "stance_score": 1, "evidence": "LAPF Investments Awards winner, Stewardship Code signatory and unqualified controls assurance for a fifth year running.", "source": "Border to Coast Annual Report 2025/26"}, {"fund_id": "btc", "fund": "Border to Coast", "theme": "Home market and policy", "theme_order": 7, "stance": "Strength", "stance_score": 1, "evidence": "Expanded to 18 Partner Funds and £120bn under Fit for the Future; published a Productive Finance Report.", "source": "Border to Coast Annual Report 2025/26"}, {"fund_id": "btc", "fund": "Border to Coast", "theme": "Stewardship and climate", "theme_order": 8, "stance": "Strength", "stance_score": 1, "evidence": "Stewardship Code signatory for a fifth year and an annual Responsible Investment and Stewardship Report.", "source": "Border to Coast RI and Stewardship Report 2025/26"}, {"fund_id": "lgpsc", "fund": "LGPS Central", "theme": "Headline returns", "theme_order": 1, "stance": "Mixed", "stance_score": 0, "evidence": "No pool-wide return is published; the board describes results as mixed.", "source": "LGPS Central Annual Report 2025"}, {"fund_id": "lgpsc", "fund": "LGPS Central", "theme": "Returns against yardstick", "theme_order": 2, "stance": "Mixed", "stance_score": 0, "evidence": "All three fixed income sub-funds ahead of benchmark, but active equity sub-funds behind.", "source": "LGPS Central Annual Report 2025"}, {"fund_id": "lgpsc", "fund": "LGPS Central", "theme": "Funding and resilience", "theme_order": 3, "stance": "Not applicable", "stance_score": null, "evidence": "An asset pool, so funding sits with its Partner Funds.", "source": "n/a"}, {"fund_id": "lgpsc", "fund": "LGPS Central", "theme": "Cost and efficiency", "theme_order": 4, "stance": "Strength", "stance_score": 1, "evidence": "Costs of 4.8 basis points beat a 5.0 target; £147.2m gross savings to date, and CEM places it in the low-cost, value-add quadrant.", "source": "LGPS Central Annual Report 2025"}, {"fund_id": "lgpsc", "fund": "LGPS Central", "theme": "Private markets", "theme_order": 5, "stance": "Strength", "stance_score": 1, "evidence": "Partner Funds hold £600m in social housing, planned to reach £1bn with a Social Housing Fund in 2027; also committed capital to Yorkshire Water through an EQT-led partnership.", "source": "Growing LGPS Investments in UK Housing, Sep 2026; infrastructure release, Mar 2026"}, {"fund_id": "lgpsc", "fund": "LGPS Central", "theme": "Third-party validation", "theme_order": 6, "stance": "Strength", "stance_score": 1, "evidence": "LGC Pool of the Year 2025, with judges citing top-quartile performance and ESG integration; PRI five stars.", "source": "LGPS Central Stewardship Report 2025"}, {"fund_id": "lgpsc", "fund": "LGPS Central", "theme": "Home market and policy", "theme_order": 7, "stance": "Strength", "stance_score": 1, "evidence": "Grew to 14 Partner Funds and around £100bn; publishing a clear policy ask on housing and arguing against mandated UK allocations.", "source": "Growing LGPS Investments in UK Housing, Sep 2026; Pensions Investment Review response, Oct 2024"}, {"fund_id": "lgpsc", "fund": "LGPS Central", "theme": "Stewardship and climate", "theme_order": 8, "stance": "Mixed", "stance_score": 0, "evidence": "Carbon intensity down 46% since 2019, but absolute financed emissions up with a 28% bigger asset base; corporate bond engagement at 71% against an 85% target.", "source": "LGPS Central Stewardship Report 2025"}], "returns": [{"row_id": "uss_1y", "fund_id": "uss", "fund": "USS", "measure": "DB fund return, FY26", "return_pct": 9.8, "yardstick": "Average comparator portfolio (implied from 2.1-point gap)", "yardstick_pct": 11.9, "source": "USS briefing, Jul 2026"}, {"row_id": "uss_5y", "fund_id": "uss", "fund": "USS", "measure": "5-year annualised return, to Mar 26", "return_pct": -0.2, "yardstick": "", "yardstick_pct": null, "source": "USS briefing, Jul 2026"}, {"row_id": "cpp_1y", "fund_id": "cpp", "fund": "CPP Investments", "measure": "Fund net return, FY26", "return_pct": 7.8, "yardstick": "", "yardstick_pct": null, "source": "FY26 results release"}, {"row_id": "cpp_10y_real", "fund_id": "cpp", "fund": "CPP Investments", "measure": "10-year real return (base CPP)", "return_pct": 5.9, "yardstick": "Chief Actuary assumption", "yardstick_pct": 4.05, "source": "FY26 annual report"}, {"row_id": "otpp_1y", "fund_id": "otpp", "fund": "Ontario Teachers'", "measure": "Total-fund net return, 2025", "return_pct": 6.7, "yardstick": "Annual target", "yardstick_pct": 7.0, "source": "2025 annual report"}, {"row_id": "ppf_1y", "fund_id": "ppf", "fund": "Pension Protection Fund", "measure": "Growth portfolio, FY26", "return_pct": 7.1, "yardstick": "", "yardstick_pct": null, "source": "Annual Report 2025/26"}, {"row_id": "ppf_5y", "fund_id": "ppf", "fund": "Pension Protection Fund", "measure": "5-year annualised return", "return_pct": 6.3, "yardstick": "5-year target", "yardstick_pct": 5.3, "source": "Annual Report 2025/26"}, {"row_id": "rp_gpf_1y", "fund_id": "railpen", "fund": "Railpen", "measure": "Growth Pooled Fund, 2025", "return_pct": 13.4, "yardstick": "", "yardstick_pct": null, "source": "Report and Accounts 2025"}, {"row_id": "rp_ltif_3y", "fund_id": "railpen", "fund": "Railpen", "measure": "Long Term Income fund, 3-year annualised", "return_pct": -12.8, "yardstick": "", "yardstick_pct": null, "source": "Report and Accounts 2025"}, {"row_id": "btc_gea_1y", "fund_id": "btc", "fund": "Border to Coast", "measure": "Global Equity Alpha, 1 year to Aug 26", "return_pct": 7.68, "yardstick": "MSCI ACWI (Net)", "yardstick_pct": 21.92, "source": "Factsheet Aug 2026"}, {"row_id": "btc_gea_3y", "fund_id": "btc", "fund": "Border to Coast", "measure": "Global Equity Alpha, 3-year annualised", "return_pct": 10.79, "yardstick": "MSCI ACWI (Net)", "yardstick_pct": 17.79, "source": "Factsheet Aug 2026"}], "validation": [{"row_id": "uss_cem", "fund": "USS", "voice": "CEM Benchmarking", "kind": "Cost benchmarker", "verdict": "13bps below peer median", "view": "Investment management costs about £102m a year below the peer median.", "date": "CY2024 survey"}, {"row_id": "uss_employers", "fund": "USS", "voice": "Participating employers", "kind": "Stakeholder survey", "verdict": "93% good or very good", "view": "An all-time high, with 92% also rating support and communications as good.", "date": "FY26"}, {"row_id": "uss_ic", "fund": "USS", "voice": "Trustee Investment Committee", "kind": "Trustee oversight", "verdict": "On target", "view": "Up from 'slightly below target' in 2025 on the investment balanced scorecard.", "date": "FY26"}, {"row_id": "otpp_moodys", "fund": "Ontario Teachers'", "voice": "Moody's", "kind": "Rating agency", "verdict": "Aa1, stable", "view": "Credit strengths in creditor priority, strong liquidity and a 154% funding ratio. Challenges: rising benefit outflows, moderate leverage, high derivatives exposure.", "date": "Jul 2026"}, {"row_id": "otpp_sp", "fund": "Ontario Teachers'", "voice": "S&P Global Ratings", "kind": "Rating agency", "verdict": "AAA, stable", "view": "Very strong enterprise risk management and organisational depth; notes weaker private equity and real estate performance.", "date": "Jun 2026"}, {"row_id": "otpp_dbrs", "fund": "Ontario Teachers'", "voice": "Morningstar DBRS", "kind": "Rating agency", "verdict": "AAA, confirmed, stable", "view": "Backed by a stable legislative framework and more than a decade of full funding; plan demographics flagged as a challenge.", "date": "Jun 2026"}, {"row_id": "cpp_debt", "fund": "CPP Investments", "voice": "Debt investors", "kind": "Capital markets", "verdict": "Strong demand", "view": "C$20bn issued across currencies in 2025; named 2025 Kangaroo Issuer of the Year.", "date": "Dec 2025"}, {"row_id": "cpp_oca", "fund": "CPP Investments", "voice": "Chief Actuary of Canada", "kind": "Statutory reviewer", "verdict": "Sustainable for 75 years", "view": "Assets came in about C$80bn above expectations over the three years covered by the latest actuarial report.", "date": "FY26"}, {"row_id": "ppf_members", "fund": "Pension Protection Fund", "voice": "Members", "kind": "Member survey", "verdict": "97.4% satisfied", "view": "Comfortably above its 90% service target.", "date": "FY26"}, {"row_id": "railpen_ukcsi", "fund": "Railpen", "voice": "UK Customer Satisfaction Index", "kind": "Member survey", "verdict": "81.7, up on 2024", "view": "Plus eight industry award wins in 2025.", "date": "2025"}, {"row_id": "btc_awards", "fund": "Border to Coast", "voice": "LAPF Investments Awards; IPE", "kind": "Industry awards", "verdict": "Winner; Silver", "view": "LAPF win, and UK and Ireland Silver at the IPE Real Estate Global Awards for its UK property fund.", "date": "2025"}, {"row_id": "lgpsc_lgc", "fund": "LGPS Central", "voice": "LGC Investment Awards", "kind": "Industry awards", "verdict": "Pool of the Year", "view": "Judges cited top-quartile performance, strong ESG integration and collaboration across the LGPS.", "date": "Dec 2025"}, {"row_id": "lgpsc_cem", "fund": "LGPS Central", "voice": "CEM Benchmarking", "kind": "Cost benchmarker", "verdict": "Low cost, value add", "view": "Placed in the value-add, low-cost quadrant against global peers.", "date": "FY26"}]};
+const tallyRows=(()=>{const m=new Map();DATA.themes.forEach(t=>{if(!m.has(t.fund_id))m.set(t.fund_id,{fund_id:t.fund_id,fund:t.fund,strengths:0,mixed:0,weaknesses:0});const r=m.get(t.fund_id);if(t.stance==='Strength')r.strengths++;else if(t.stance==='Mixed')r.mixed++;else if(t.stance==='Weakness')r.weaknesses++;});return [...m.values()];})();
+const gapRows=DATA.returns.filter(r=>r.yardstick_pct!==null).map(r=>({row_id:r.row_id,gap_pp:Math.round((r.return_pct-r.yardstick_pct)*100)/100}));
+const dash={data:id=>({status:'ok',data:{stance_tally:tallyRows,ret_gap:gapRows}[id]||DATA[id]})};
+
+const SHORT={"Headline returns":"Headline returns","Returns against yardstick":"Against yardstick","Funding and resilience":"Funding and resilience","Cost and efficiency":"Cost and efficiency","Private markets":"Private markets","Third-party validation":"Third-party validation","Home market and policy":"Home market and policy","Stewardship and climate":"Stewardship and climate"};
+let selected=null; let animated=false;
+const fmtPct=d3.format('+.1f'); const fmt1=d3.format('.1f');
+function fail(el){el.classList.remove('dash-skeleton');d3.select(el).selectAll('*').remove();const f=d3.select(el).append('div').attr('class','fail');f.append('i');f.append('span').text('Failed to load');}
+
+function drawTakeaway(){
+ const el=document.getElementById('takeaway');const t=dash.data('stance_tally');
+ if(t.status==='error'){el.classList.remove('dash-skeleton');el.textContent='';return;}
+ if(t.status!=='ok'){el.textContent='—';return;}
+ el.classList.remove('dash-skeleton');
+ const rows=t.data.slice();
+ const best=rows.filter(r=>r.fund_id!=='uss').sort((a,b)=>b.strengths-a.strengths||a.weaknesses-b.weaknesses)[0];
+ const weak=rows.filter(r=>r.weaknesses>0).map(r=>r.fund);
+ const u=rows.find(r=>r.fund_id==='uss');const weakP=weak.filter(f=>f!=='USS');const list=weakP.length>1?weakP.slice(0,-1).join(', ')+' and '+weakP[weakP.length-1]:weakP[0];const _x=weak.length>1?weak.slice(0,-1).join(', ')+' and '+weak[weak.length-1]:weak[0];
+ el.textContent=best.fund+' has the cleanest story right now, led by funding strength and outside validation. '+(list?list+' carry the clearest weak spots among the peers, mostly on returns against their own yardsticks and on private markets. ':'')+(u?'USS scores '+u.strengths+' strengths, '+u.mixed+' mixed and '+u.weaknesses+' weak, with funding and cost its strongest cards and private markets its soft spot.':'');
+}
+
+function showDetail(row){
+ const h=document.getElementById('d-head'),e=document.getElementById('d-ev'),s=document.getElementById('d-src');
+ if(!row){h.textContent='';e.textContent='';s.textContent='';return;}
+ 
+ h.textContent=row.fund+'  /  '+row.theme+'  /  '+row.stance;
+ 
+ e.textContent=row.evidence; s.textContent='Source: '+row.source;
+}
+
+function drawHeatmap(){
+ const el=document.getElementById('heatmap');const t=dash.data('themes');const tl=dash.data('stance_tally');
+ if(t.status==='error'){fail(el);showDetail(null);return;}
+ if(t.status!=='ok'){return;}
+ el.classList.remove('dash-skeleton');
+ const rows=t.data;const root=d3.select(el);root.selectAll('*').remove();
+ const themes=[...new Map(rows.map(r=>[r.theme,Number(r.theme_order)])).entries()].sort((a,b)=>a[1]-b[1]).map(d=>d[0]);
+ const funds=[...new Map(rows.map(r=>[r.fund_id,r.fund])).entries()];
+ root.append('div').attr('class','th');
+ themes.forEach(th=>root.append('div').attr('class','th').text(SHORT[th]||th));
+ root.append('div').attr('class','th').text('Strong / mixed / weak');
+ const tally=tl.status==='ok'?new Map(tl.data.map(r=>[r.fund_id,r])):new Map();
+ const typeOf=new Map((dash.data('funds').status==='ok'?dash.data('funds').data:[]).map(f=>[f.fund_id,f.type]));
+ if(!selected){const w=rows.find(r=>r.stance==='Weakness');selected=w?w.fund_id+'|'+w.theme:null;}
+ funds.forEach(([fid,fname])=>{
+  const fn=root.append('div').attr('class','fname'+(fid==='uss'?' client':''));fn.append('span').text(fname);if(fid==='uss')fn.append('span').attr('class','ctag').text('Client');
+  themes.forEach(th=>{
+   const r=rows.find(x=>x.fund_id===fid&&x.theme===th);
+   if(!r){root.append('div');return;}
+   const key=fid+'|'+th;
+   const b=root.append('button').attr('type','button').attr('class','cell s-'+r.stance+(animated?'':' in'))
+     .attr('aria-pressed',selected===key?'true':'false').attr('aria-label',fname+', '+th+': '+r.stance).text(r.stance==='Not evidenced'?'—':r.stance==='Not applicable'?'n/a':r.stance);
+   b.on('click',()=>{selected=key;root.selectAll('.cell').attr('aria-pressed','false');b.attr('aria-pressed','true');showDetail(r);});
+  });
+  const tr=tally.get(fid);
+  root.append('div').attr('class','tally').text(tr?tr.strengths+' / '+tr.mixed+' / '+tr.weaknesses:'');if(fid==='uss')root.append('div').attr('class','sep');
+ });
+ animated=true;
+ const cur=selected&&rows.find(x=>x.fund_id+'|'+x.theme===selected);showDetail(cur||null);
+}
+
+function drawDumbbell(){
+ const el=document.getElementById('dumbbell');const r=dash.data('returns');const g=dash.data('ret_gap');
+ if(r.status!=='ok'){return;}
+ const root=d3.select(el);root.selectAll('*').remove();
+ const gap=new Map(g.status==='ok'?g.data.map(d=>[d.row_id,d.gap_pp]):[]);
+ const rows=r.data.map(d=>({...d,ret:Number(d.return_pct),yd:(d.yardstick_pct===null||d.yardstick_pct===''||d.yardstick_pct===undefined)?null:Number(d.yardstick_pct)}));
+ const W=Math.max(300,el.clientWidth);
+ const wide=W>=640;
+ const labelW=wide?Math.min(300,Math.round(W*0.32)):0;
+ const rowH=wide?46:58, top=6, bottom=30, H=top+rows.length*rowH+bottom;
+ const vals=rows.flatMap(d=>d.yd===null?[d.ret]:[d.ret,d.yd]);
+ const left=labelW+(wide?16:10), right=70;
+ const x=d3.scaleLinear([Math.min(0,d3.min(vals))-1,d3.max(vals)+1],[left,W-right]).nice();
+ const svg=root.append('svg').attr('width','100%').attr('viewBox',`0 0 ${W} ${H}`).attr('role','img').attr('aria-label',"Returns against each fund's own yardstick");
+ // row bands so each label and its dots read as one unit
+ svg.append('g').selectAll('rect').data(rows).join('rect').attr('x',0).attr('y',(d,i)=>top+i*rowH).attr('width',W).attr('height',rowH)
+   .style('fill',(d,i)=>d.fund_id==='uss'?'color-mix(in srgb,var(--accent) 8%,transparent)':(i%2?'transparent':'color-mix(in srgb,var(--fg) 3.5%,transparent)'));
+ const ticks=x.ticks(W<520?5:8);
+ svg.append('g').selectAll('line').data(ticks).join('line').attr('x1',d=>x(d)).attr('x2',d=>x(d)).attr('y1',top).attr('y2',H-bottom)
+   .style('stroke',d=>d===0?'var(--muted)':'var(--grid)').style('stroke-width',1);
+ svg.append('g').selectAll('text').data(ticks).join('text').attr('x',d=>x(d)).attr('y',H-bottom+18).attr('text-anchor','middle')
+   .style('fill','var(--muted)').style('font-size','.8rem').text(d=>d+'%');
+ const tip=root.append('div').attr('class','tip');
+ rows.forEach((d,i)=>{
+  const y0=top+i*rowH; const cy=wide?y0+rowH/2:y0+38;
+  const grp=svg.append('g');
+  const bold=d.fund_id==='uss'?'600':null;
+  if(wide){
+   grp.append('text').attr('x',10).attr('y',cy-3).style('font-size','.8rem').style('font-weight',bold||'600').style('fill','var(--fg)').text(d.fund);
+   grp.append('text').attr('x',10).attr('y',cy+12).style('font-size','.76rem').style('fill','var(--muted)').text(d.measure);
+  }else{
+   const t=grp.append('text').attr('x',8).attr('y',y0+17).style('font-size','.72rem').style('fill','var(--fg)');
+   t.append('tspan').style('font-weight','600').text(d.fund+': ');t.append('tspan').style('fill','var(--muted)').text(d.measure);
+  }
+  const behind=d.yd!==null&&d.ret<d.yd;
+  if(d.yd!==null){
+   grp.append('line').attr('x1',x(d.yd)).attr('x2',x(d.ret)).attr('y1',cy).attr('y2',cy).style('stroke',behind?'var(--bad)':'var(--ok)').style('stroke-width',3).style('stroke-linecap','round').style('opacity',.7);
+   grp.append('circle').attr('cx',x(d.yd)).attr('cy',cy).attr('r',6).style('fill','var(--panel)').style('stroke','var(--muted)').style('stroke-width',2);
+  }
+  grp.append('circle').attr('cx',x(d.ret)).attr('cy',cy).attr('r',7).style('fill',behind?'var(--bad)':'var(--accent)');
+  const gp=gap.get(d.row_id);
+  const lx=Math.max(x(d.ret),d.yd!==null?x(d.yd):-Infinity)+12;
+  grp.append('text').attr('x',lx).attr('y',cy+4).style('font-size','.8rem').style('font-variant-numeric','tabular-nums')
+    .style('fill',gp===undefined?'var(--muted)':behind?'var(--bad)':'var(--ok)')
+    .text(gp===undefined?fmt1(d.ret)+'%':fmtPct(gp)+' pts');
+  grp.append('rect').attr('x',0).attr('y',y0).attr('width',W).attr('height',rowH).style('fill','transparent')
+   .on('mousemove',(ev)=>{const [mx,my]=d3.pointer(ev,el);tip.selectAll('*').remove();tip.append('div').attr('class','tt').text(d.fund);tip.append('div').text(d.measure+': '+fmt1(d.ret)+'%');if(d.yd!==null)tip.append('div').text(d.yardstick+': '+fmt1(d.yd)+'%');tip.append('div').attr('class','tt').text('Source: '+d.source);
+     const tw=tip.node().offsetWidth;tip.style('left',Math.min(Math.max(0,mx+12),el.clientWidth-tw)+'px').style('top',(my+14)+'px').style('opacity',1);})
+   .on('mouseleave',()=>tip.style('opacity',0));
+ });
+}
+
+function drawTable(id,ds,key,cols){
+ const t=document.getElementById(id);const tb=t.querySelector('tbody');const d=dash.data(ds);
+ if(d.status==='error'){tb.classList.remove('dash-skeleton');d3.select(tb).selectAll('*').remove();const td=d3.select(tb).append('tr').append('td').attr('colspan',cols.length);fail(td.node());return;}
+ if(d.status!=='ok')return;
+ tb.classList.remove('dash-skeleton');
+ d3.select(tb).selectAll('tr').data(d.data).join('tr').attr('data-key',r=>r[key]).each(function(r){
+  const tr=d3.select(this);tr.selectAll('td').remove();
+  cols.forEach(([f,cls])=>tr.append('td').attr('class',cls||null).text(r[f]));
+ });
+}
+
+function drawAll(){
+ drawTakeaway();drawHeatmap();drawDumbbell();
+ drawTable('vtable','validation','row_id',[['fund','strong'],['voice'],['kind','muted'],['verdict','strong'],['view'],['date','muted']]);
+ drawTable('ftable','funds','fund_id',[['fund','strong'],['type','muted'],['period','muted'],['scale'],['lead_narrative'],['watch_point'],['latest','muted']]);
+}
+drawAll();
+let rz;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(drawDumbbell,150);});
+const named=document.getElementById(location.hash.slice(1));if(named)named.scrollIntoView();
+
+</script>
+</body>
+</html>
